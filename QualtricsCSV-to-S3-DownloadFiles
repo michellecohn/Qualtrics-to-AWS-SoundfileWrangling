@@ -1,0 +1,50 @@
+#########################################
+#
+#
+# Starting with a Qualtrics output .csv 
+# (or .csv with the S3 url for a soundfile)
+#
+# Download specific files from S3: soundfiles, AWS transcriptions
+#
+# Generates CLI terminal command (AWS), which you will copy and paste into the command line
+#
+# MC updated 7/19/21
+#
+#########################################
+
+# (1) Load in dataframe with the file list!
+##########################################
+# DEFINE FILE:  STARTING FROM FULL QUALTRICS FORMATTED DATA 
+# (note that I am starting from a 'cleaned up' Qualtrics file, with only 1 header file)
+
+data = read.csv("/Users/michellecohn/Desktop/qualtrics_output_data.csv", header = TRUE)
+csv_output_dir = "/Users/michellecohn/Desktop/"
+
+##########################################
+# (2) DEFINE SOUNDFILE OUTPUT DIRECTORY & S3 BUCKET
+##########################################
+soundout_dir = "/Users/michellecohn/Desktop/soundfiles/"
+bucket = "s3://..."
+##########################################
+
+###### REMOVE addpipe url
+addpipe = "https://us1-addpipe.s3-us-west-1.amazonaws.com/"
+addpipeEast = "https://us2-addpipe.s3.us-east-1.amazonaws.com/"
+addpipeEU = "https://eu1-addpipe.s3.eu-central-1.amazonaws.com/"
+
+data$sound_name = gsub(addpipe, "", data$soundfile_url)
+data$sound_name = gsub(addpipeEast, "", data$sound_name)
+data$sound_name = gsub(addpipeEU, "", data$sound_name)
+
+# (2) Reformat the filename::: DOING THIS FOR 'PRACTICE' files first
+file_list = data$sound_name
+changedir = sprintf("cd %s", soundout_dir)
+command_list = sprintf("aws s3 cp %s%s %s", bucket, file_list, file_list)
+
+command_list = c(changedir, command_list)
+command_filename = sprintf("%scommand_list.csv", csv_output_dir)
+write.csv(command_list, command_filename)
+
+
+##### THEN OPEN IN EXCEL
+##### COPY AND PASTE INTO COMMAND LINE (after signing into AWS); press 'enter' to begin
