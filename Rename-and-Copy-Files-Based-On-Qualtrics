@@ -1,0 +1,29 @@
+#########################################
+#
+#
+# Copy .wav files (formerly from S3 bucket) & rename based on Qualtrics .csv data (SubjectNumber)
+#
+# MC updated 7/20/21
+#
+#########################################
+
+# (1) Load in dataframe with the file list!
+##########################################
+
+data = read.csv("/Users/michellecohn/Desktop/qualtrics_data.csv", header = TRUE)
+
+# DEFINE OUTPUT DIRECTORY (for renamed files)
+OUTPUT_DIR = "/Users/michellecohn/Desktop/renamed_files/"
+
+#### (1) BASELINE PRODUCTIONS
+# Point to where the .wav files are
+baseline_file_input_dir = "/Users/michellecohn/Desktop/soundfiles/"
+data$baseline = gsub(".mp4", "", data$baseline) 
+
+# Copy baseline WAV
+original_baseline_wav = sprintf("%s%s.wav", baseline_file_input_dir, data$baseline)
+new_baseline_wav = sprintf("%s%s_baseline.wav", OUTPUT_DIR, data$SubjectNumber)
+file.copy(original_baseline_wav, new_baseline_wav)
+
+
+### Can do this for other types of files as well! (e.g., AWS Transcribe .csvs)
